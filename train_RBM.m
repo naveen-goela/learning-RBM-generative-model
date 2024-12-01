@@ -9,8 +9,9 @@
 % [bRBM] = train_RBM(training_images)
 %
 % INPUTS:
-% training_images = set of training images.
-% (training_images(:,:,k) specifies k-th image)
+% training_images = set of training samples.
+% training_images(:,k) specifies the k-th training vector sample.
+% training_images(:,k) for MNIST data is 784 x 60000. 
 %
 % OUTPUTS: 
 % bRBM     = binary RBM trained from images.
@@ -36,22 +37,25 @@ eps = 0.001;
 % Process all data samples per epoch of training. 
 for epoch=1:total_epochs
     
+    % Display epoch number. 
+    fprintf('Training epoch %d of %d ... \n', epoch, total_epochs);
+    
     % Random order of sampling from training set.
     order_data = randperm(length(training_images));  
     for k=1:length(order_data)
-        if (mod(k, 1000) == 0) 
-            fprintf('Epoch %d of %d, %f of samples complete... \n', ...
-                     epoch, total_epochs, (1.0*k)/60000); 
+        
+        if (mod(k, 10000) == 0)
+            disp('Completed 10000 training samples')
         end
-        v_data_prob  = training_images(:,:,order_data(k));  
-        v_data_prob  = reshape(v_data_prob, [conf.n_v 1]);  
-        unif_sample   = rand(size(v_data_prob));  
-        v_data = 1.0 * (unif_sample < v_data_prob); 
+        
+        % Obtain binary vector sample from training set. 
+        v_data = training_images(:,order_data(k));  
     
         % Compute constrastive divergence (CD) update. 
         [gradient] = compute_CD_update(bRBM, v_data); 
 
-        bRBM.W   = bRBM.W + eps*gradient.W; 
+        % Update generative model. 
+        bRBM.W   = bRBM.W   + eps*gradient.W; 
         bRBM.b_v = bRBM.b_v + eps*gradient.b_v;
         bRBM.b_h = bRBM.b_h + eps*gradient.b_h;                 
     end
