@@ -4,6 +4,8 @@ Code to implement a learning algorithm for a Restricted Boltzmann Machine (RBM) 
 
 The main training loop for the learning algorithm is available in the file: ``` train_RBM.m ```
 
+The contrastive divergence update is available in the file: ``` compute_CD_update.m ```
+
 ***
 
 
